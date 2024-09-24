@@ -97,7 +97,9 @@
     description = "hyperbarq";
     extraGroups = [ "networkmanager" "wheel" "audio" "rtkit" ];
     packages = with pkgs; [
-      discord
+      (pkgs.discord.override {
+      withVencord = true;
+      })
       kate
       bitwarden-desktop
       python3
@@ -119,12 +121,33 @@
       unzip
       zip
       git
+      vim
+      vscode
+      anydesk
+      vlc
+      r2modman
     #  thunderbird
     ];
   };
 
+  virtualisation.virtualbox.host.enable = true;
+  users.extraGroups.vboxusers.members = [ "hyperbarq" ];
+
   services.flatpak.enable = true;
 
+  services.openssh = {
+  forwardX11 = true;
+  enable = true;
+  ports = [ 22 ];
+  settings = {
+    PasswordAuthentication = true;
+    AllowUsers = null; # Allows all users by default. Can be [ "user1" "user2" ]
+    UseDns = true;
+    X11Forwarding = true;
+    PermitRootLogin = "yes"; # "yes", "without-password", "prohibit-password", "forced-commands-only", "no"
+  };
+  };
+  programs.ssh.forwardX11 = true;
   programs.steam.enable = true;
   programs.steam.gamescopeSession.enable = true;
   programs.gamemode.enable = true;
