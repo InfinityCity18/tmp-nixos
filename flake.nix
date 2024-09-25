@@ -14,8 +14,8 @@
   outputs = { self, nixpkgs, ... }@inputs:
   {
     diskoConfigurations = {
-        vm = {
-            disko.devices = {
+            name = "vm";
+            value.disko.devices = {
                 main = {
                     device = "/dev/sda";
                     type = "disk";
