@@ -2,7 +2,6 @@
   description = "NixOS config flake";
 
   inputs = {
-
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
     home-manager = {
@@ -11,13 +10,36 @@
     };
   };
 
-  outputs = { self, nixpkgs, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, ... }@inputs:
   {
+    nixosConfigurations = {
+        nixosd = let 
+            username = "hyperbarq";
+            specialArgs = {inherit username;};
+        in nixpkgs.lib.nixosSystem {
+            inherit specialArgs;
+            system = "x86_64-linux";
+
+            modules = [
+                home-manager.nixosModules.home-manager 
+                {
+                    home-manager.useGlobalPkgs = true;
+                    home-manager.useUserPackages = true;
+
+                    home-manager.extraSpecialArgs = inputs // specialArgs;
+                    home-manager.users.${username} = import ./users/${username}/home.nix;
+                }
+            ];
+        };
+
+        }
+    };
+
     diskoConfigurations = {
-            vm.disko.devices = {
+            laptop.disko.devices = {
                 disk = {
                     main = {
-                        device = "/dev/sda";
+                        device = "/dev/nvme0n1";
                         type = "disk";
                         content = {
                             type = "gpt";
